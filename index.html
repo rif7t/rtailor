@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeTailor AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="glow-bg top-left-glow no-print"></div>
+    <div class="glow-bg top-right-glow no-print"></div>
+    
+    <!-- Decorative SVG Vectors -->
+    <svg class="deco-star deco-star-1 no-print" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z" fill="#a855f7" opacity="0.6"/></svg>
+    <svg class="deco-star deco-star-2 no-print" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z" fill="#fbbf24" opacity="0.8"/></svg>
+    <svg class="deco-star deco-star-3 no-print" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z" fill="#fbbf24" opacity="0.8"/></svg>
+
+    <nav class="navbar no-print">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </div>
+            <span>ResumeTailor <strong>AI</strong></span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" id="nav-how">How It Works</a></li>
+            <li><a href="#" id="nav-feats">Features</a></li>
+            <li><a href="#" id="nav-price">Pricing</a></li>
+            <li><a href="#" id="nav-faq">FAQ</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="settings-btn" id="api-key-btn" title="Model Preferences">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+            <div class="theme-toggle" id="theme-toggle-btn" style="cursor: pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                <div class="toggle-track"><div class="toggle-knob"></div></div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </div>
+            <button class="sign-in-btn">Sign In</button>
+        </div>
+    </nav>
+
+    <main class="hero no-print">
+        <h1>Tailored Resumes.<br>Better Matches. <span class="highlight-yellow">More Interviews.<svg class="swish" viewBox="0 0 300 20" xmlns="http://www.w3.org/2000/svg"><path d="M5 15Q150 0 295 15" stroke="#fbbf24" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span></h1>
+        <p class="subtitle">Resume<strong>Tailor AI</strong> analyzes the job description and your resume<br>to create an ATS-friendly, highly relevant resume.</p>
+
+        <div class="steps-card">
+            <div class="steps-grid">
+                <!-- Step 1 -->
+                <div class="step-col">
+                    <div class="step-icon blue-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+                    </div>
+                    <h3>1. Job Description</h3>
+                    <p>Paste the job description<br>you're applying for.</p>
+                    <button class="outline-btn blue-btn" id="open-jd-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        Paste JD
+                    </button>
+                    <span class="sub-action">or Upload <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
+                </div>
+
+                <div class="arrow-divider"><svg width="30" height="12" viewBox="0 0 30 12" fill="none"><path d="M0 6H26" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4"/><path d="M22 2L28 6L22 10" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+                <!-- Step 2 -->
+                <div class="step-col">
+                    <div class="step-icon purple-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    </div>
+                    <h3>2. Your Resume</h3>
+                    <p>Upload your current resume<br>in PDF format.</p>
+                    <input type="file" id="resume-upload" accept=".pdf" class="hidden">
+                    <label for="resume-upload" class="outline-btn purple-btn" id="upload-resume-lbl">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        Upload Resume
+                    </label>
+                    <span class="sub-action" id="open-resume-text-btn" style="cursor: pointer;">or Paste Text <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
+                </div>
+
+                <div class="arrow-divider"><svg width="30" height="12" viewBox="0 0 30 12" fill="none"><path d="M0 6H26" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 4"/><path d="M22 2L28 6L22 10" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+                <!-- Step 3 -->
+                <div class="step-col">
+                     <!-- Hand drawn arrow -->
+                     <div class="drawn-arrow">
+                         <span class="drawn-text">Optimized for ATS<br>and relevance</span>
+                         <svg width="30" height="40" viewBox="0 0 30 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 2Q15 15 5 35" stroke="#22c55e" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M2 25 L5 35 L15 32" stroke="#22c55e" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+                     </div>
+                    <div class="step-icon green-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <h3>3. Tailored Resume</h3>
+                    <p>Get your ATS-compliant,<br>job-tailored resume.</p>
+                    <input type="email" id="user-email" class="trial-email-input" placeholder="Email for 6 free trials" autocomplete="email">
+                    <button class="outline-btn green-btn" id="generate-btn">
+                        <span id="btn-text">Get Tailored Resume</span>
+                        <svg class="btn-sparkle" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <div class="loader" id="generate-loader" style="display: none;"></div>
+                    </button>
+                    <p id="trial-status" class="trial-status-text" aria-live="polite">Checking free trial balance...</p>
+                </div>
+            </div>
+            
+                <p id="system-status" class="status-indicator" aria-live="polite"></p>
+
+            <div class="features-row">
+                <div class="feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> ATS-Friendly</div>
+                <div class="feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Your Data is Secure</div>
+                <div class="feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Smart AI Matching</div>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="preview-card" id="preview-section">
+            <div class="preview-metrics">
+                <div class="match-score">
+                    <h4>JD Match Score</h4>
+                    <div class="donut-chart">
+                        <div class="donut-value" id="dynamic-score">92<span class="pct">%</span></div>
+                        <svg width="120" height="120" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#e2e8f0" stroke-width="12"/>
+                            <circle id="dynamic-donut" cx="60" cy="60" r="50" fill="none" stroke="#7c3aed" stroke-width="12" stroke-dasharray="314" stroke-dashoffset="25" stroke-linecap="round" style="transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 1s ease-in-out;"/>
+                        </svg>
+                    </div>
+                    <div class="match-label" id="dynamic-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#7c3aed"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Excellent Match</div>
+                </div>
+                <!-- ... -->
+                <div class="key-improvements">
+                    <h4>Key Improvements</h4>
+                    <ul id="dynamic-improvements">
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Added 12 relevant skills</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Rephrased 8 bullet points</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Better alignment with JD</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> ATS-friendly formatting</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="preview-docs">
+                <div class="doc-col doc-before">
+                    <div class="doc-label">Before</div>
+                    <div class="doc-card" id="before-card">
+                        <div class="top-row">
+                            <div class="doc-head">
+                                <div class="name" id="before-name">Candidate</div>
+                                <div class="title">Original Uploaded Text</div>
+                            </div>
+                        </div>
+                        <div id="before-content" style="margin-top: 1rem; font-size: 0.65rem; color: var(--text-muted); white-space: pre-wrap; line-height: 1.5; overflow-y: auto; max-height: 320px; padding-right: 8px;" class="custom-scrollbar">
+                            <div class="skeleton-line full"></div>
+                            <div class="skeleton-line half"></div>
+                            <div class="skeleton-line quarter"></div>
+                            <div class="skeleton-bullet"><span></span><div class="skl-line"></div></div>
+                            <div class="skeleton-bullet"><span></span><div class="skl-line"></div></div>
+                            <div class="skeleton-bullet"><span></span><div class="skl-line"></div></div>
+                            <div class="skeleton-bullet"><span></span><div class="skl-line"></div></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="arrow-circle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+
+                <div class="doc-col doc-after">
+                    <div class="doc-label after">After (Tailored)</div>
+                    <div class="doc-card active">
+                        <svg class="deco-star doc-star" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z" fill="#7c3aed" opacity="0.8"/></svg>
+                        
+                        <div class="top-row">
+                            <div class="doc-head">
+                                <div class="name" id="preview-name">John Doe</div>
+                                <div class="title">Software Engineer</div>
+                            </div>
+                            <div style="display:flex; gap: 8px;">
+                                <button id="edit-trigger" class="download-trigger-btn" style="background: white; color: var(--blue-500); border: 1px solid var(--blue-500);">✎ Edit Text</button>
+                                <button id="download-trigger" class="download-trigger-btn">Download PDF</button>
+                            </div>
+                        </div>
+                        
+                        <div class="doc-contact" id="preview-contact">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> johndoe@email.com &nbsp;&nbsp;
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> (123) 456-7890
+                        </div>
+
+                        <div class="section-title">PROFESSIONAL SUMMARY</div>
+                        <div class="mock-text" id="preview-summary">
+                            <div class="skeleton-line full" style="height: 6px;"></div>
+                            <div class="skeleton-line full" style="height: 6px;"></div>
+                            <div class="skeleton-line half" style="height: 6px;"></div>
+                        </div>
+
+                        <div class="section-title">SKILLS</div>
+                        <div class="skills-badges">
+                            <span class="badge">Python</span>
+                            <span class="badge">SQL</span>
+                            <span class="badge">AWS</span>
+                            <span class="badge">Docker</span>
+                            <span class="badge">REST APIs</span>
+                            <span class="badge">Agile</span>
+                        </div>
+                        </div>
+                        <div id="preview-experience" style="margin-top: 1.5rem;">
+                            <!-- Dynamic Experience and Regenerate UI injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Hidden Output for Printing -->
+    <div id="print-container" class="print-container hidden">
+        <div class="ats-resume" id="ats-resume">
+            <!-- Populated by JS for ATS PDF Generation -->
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="api-modal" class="modal hidden no-print" role="dialog" aria-modal="true" aria-labelledby="prefs-title">
+        <div class="modal-content">
+            <h2 id="prefs-title">Model Preferences</h2>
+            <p style="margin-bottom: 8px;">The app now uses your server-side Gemini key from environment secrets.</p>
+            <p class="settings-note">Only model selection is saved in this browser.</p>
+            <p style="margin-bottom: 8px;">Select Model Version:</p>
+            <select id="model-select" class="modal-input">
+                <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash</option>
+                <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B</option>
+                <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro</option>
+                <option value="gemini-2.0-flash" selected>Gemini 2.0 Flash</option>
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                <option value="gemma-3-27b-it">Gemma 3 27B</option>
+            </select>
+            <div class="modal-actions" style="margin-top: 16px;">
+                <button class="primary-btn-sm" id="save-api-btn">Save</button>
+                <button class="secondary-btn-sm" id="close-api-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="jd-modal" class="modal hidden no-print" role="dialog" aria-modal="true" aria-labelledby="jd-title">
+        <div class="modal-content jd-modal-content">
+            <h2 id="jd-title">Add Job Description</h2>
+            <p>Paste the job description carefully.</p>
+            <textarea id="jd-input" placeholder="Paste JD here..."></textarea>
+            <div class="modal-actions">
+                <button class="primary-btn-sm" id="save-jd-btn">Save JD</button>
+                <button class="secondary-btn-sm" id="close-jd-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="resume-text-modal" class="modal hidden no-print" role="dialog" aria-modal="true" aria-labelledby="resume-title">
+        <div class="modal-content jd-modal-content">
+            <h2 id="resume-title">Paste Resume Text</h2>
+            <p>Paste the raw text of your current resume.</p>
+            <textarea id="resume-text-input" placeholder="Paste Resume here..."></textarea>
+            <div class="modal-actions">
+                <button class="primary-btn-sm" id="save-resume-text-btn">Use This Text</button>
+                <button class="secondary-btn-sm" id="close-resume-text-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="placeholder-modal" class="modal hidden no-print" role="dialog" aria-modal="true" aria-labelledby="placeholder-title">
+        <div class="modal-content">
+            <h2 id="placeholder-title">Section</h2>
+            <p id="placeholder-text" style="color: var(--text-main); font-size: 0.95rem; line-height: 1.5;">This feature is coming soon.</p>
+            <div class="modal-actions">
+                <button class="primary-btn-sm" id="close-placeholder-btn">Sounds Good</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Document Modal -->
+    <div id="edit-modal" class="modal hidden no-print" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+        <div class="modal-content jd-modal-content" style="max-height: 90vh; display: flex; flex-direction: column;">
+            <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 1rem;">
+                <h2 id="edit-title" style="margin: 0;">Edit ATS Resume</h2>
+                <span class="sub-action">Final layout tweaks before generating PDF</span>
+            </div>
+            <div id="editable-ats-container" contenteditable="true" class="custom-scrollbar" style="flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; overflow-y: auto; font-family: 'Times New Roman', Times, serif; font-size: 11pt; color: black; background: white; margin-bottom: 1rem; outline: none; min-height: 300px;"></div>
+            <div class="modal-actions" style="margin-top: auto;">
+                <button class="primary-btn-sm" id="save-edit-btn">Save Changes</button>
+                <button class="secondary-btn-sm" id="close-edit-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.v2.js"></script>
+</body>
+</html>
