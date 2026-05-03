@@ -448,69 +448,68 @@ document.addEventListener("DOMContentLoaded", () => {
     const beforeContent = document.getElementById("before-content");
     if (beforeContent && uploadedText) beforeContent.textContent = uploadedText;
 
-    if (data.metrics) {
-      const score = Number(data.metrics.score);
-      const boundedScore = Number.isFinite(score)
-        ? Math.max(1, Math.min(100, score))
-        : estimateMatchScoreFromContent(data, jdText);
-      const roundedScore = Math.round(boundedScore);
+    const metrics = data.metrics && typeof data.metrics === "object" ? data.metrics : {};
+    const score = Number(metrics.score);
+    const boundedScore = Number.isFinite(score)
+      ? Math.max(1, Math.min(100, score))
+      : estimateMatchScoreFromContent(data, jdText);
+    const roundedScore = Math.round(boundedScore);
 
-      const scoreEl = document.getElementById("dynamic-score");
-      if (scoreEl) scoreEl.innerHTML = `${roundedScore}<span class="pct">%</span>`;
+    const scoreEl = document.getElementById("dynamic-score");
+    if (scoreEl) scoreEl.innerHTML = `${roundedScore}<span class="pct">%</span>`;
 
-      const offset = 314 - (314 * boundedScore) / 100;
-      const donut = document.getElementById("dynamic-donut");
-      if (donut) donut.style.strokeDashoffset = offset;
+    const offset = 314 - (314 * boundedScore) / 100;
+    const donut = document.getElementById("dynamic-donut");
+    if (donut) donut.style.strokeDashoffset = offset;
 
-      let label = "Strong Match";
-      let scoreTone = "high";
-      let donutColor = "#7C3AED";
-      let matchFeedback = "";
+    let label = "Strong Match";
+    let scoreTone = "high";
+    let donutColor = "#7C3AED";
+    let matchFeedback = "";
 
-      if (boundedScore >= 90) {
-        label = "Excellent Match";
-      } else if (boundedScore >= 70) {
-        label = "Strong Match";
-        scoreTone = "medium";
-        donutColor = "#2563EB";
-      } else if (boundedScore >= 50) {
-        label = "Fair Match";
-        scoreTone = "medium";
-        donutColor = "#2563EB";
-        matchFeedback = "The tailored resume is improved, but your current profile is only moderately aligned with this JD.";
-      } else {
-        label = "Low Match";
-        scoreTone = "low";
-        donutColor = "#D97706";
-        matchFeedback = "Even after optimization, this JD remains a weak fit. Consider adding stronger relevant projects or experience.";
-      }
+    if (boundedScore >= 90) {
+      label = "Excellent Match";
+    } else if (boundedScore >= 70) {
+      label = "Strong Match";
+      scoreTone = "medium";
+      donutColor = "#2563EB";
+    } else if (boundedScore >= 50) {
+      label = "Fair Match";
+      scoreTone = "medium";
+      donutColor = "#2563EB";
+      matchFeedback = "The tailored resume is improved, but your current profile is only moderately aligned with this JD.";
+    } else {
+      label = "Low Match";
+      scoreTone = "low";
+      donutColor = "#D97706";
+      matchFeedback = "Even after optimization, this JD remains a weak fit. Consider adding stronger relevant projects or experience.";
+    }
 
-      if (donut) donut.style.stroke = donutColor;
+    if (donut) donut.style.stroke = donutColor;
 
-      const scoreCard = document.querySelector(".match-score");
-      if (scoreCard) {
-        scoreCard.classList.remove("score-high", "score-medium", "score-low");
-        scoreCard.classList.add(`score-${scoreTone}`);
-      }
+    const scoreCard = document.querySelector(".match-score");
+    if (scoreCard) {
+      scoreCard.classList.remove("score-high", "score-medium", "score-low");
+      scoreCard.classList.add(`score-${scoreTone}`);
+    }
 
-      const labelEl = document.getElementById("dynamic-label");
-      if (labelEl) {
-        labelEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="${donutColor}"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${label}`;
-      }
+    const labelEl = document.getElementById("dynamic-label");
+    if (labelEl) {
+      labelEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="${donutColor}"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${label}`;
+    }
 
-      const feedbackEl = document.getElementById("match-feedback");
-      if (feedbackEl) {
-        feedbackEl.textContent = matchFeedback;
-      }
+    const feedbackEl = document.getElementById("match-feedback");
+    if (feedbackEl) {
+      feedbackEl.textContent = matchFeedback;
+    }
 
-      if (boundedScore < 50) {
-        setStatus("Low JD match: resume optimized, but profile fit is still weak for this role.", "error");
-      }
+    if (boundedScore < 50) {
+      setStatus("Low JD match: resume optimized, but profile fit is still weak for this role.", "error");
+    }
 
-      const impUl = document.getElementById("dynamic-improvements");
-      if (impUl && Array.isArray(data.metrics.improvements)) {
-        impUl.innerHTML = data.metrics.improvements.slice(0, 4).map((item) => `<li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> ${escapeHtml(item)}</li>`).join("");
-      }
+    const impUl = document.getElementById("dynamic-improvements");
+    if (impUl && Array.isArray(metrics.improvements)) {
+      impUl.innerHTML = metrics.improvements.slice(0, 4).map((item) => `<li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> ${escapeHtml(item)}</li>`).join("");
     }
   }
 
