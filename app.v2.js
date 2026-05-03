@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let uploadedText = "";
   let jdText = "";
   let generatedData = null;
+  let isParsingResume = false;
 
   const TRIAL_LOCAL_KEY = "resume_tailor_trial_email";
   const MODEL_LOCAL_KEY = "gemini_model";
@@ -24,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const trialStatus = document.getElementById("trial-status");
   const emailInput = document.getElementById("user-email");
   const previewSection = document.getElementById("preview-section");
+  const toastContainer = document.getElementById("toast-container");
 
   const generateBtn = document.getElementById("generate-btn");
   const btnText = document.getElementById("btn-text");
@@ -58,6 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   maybeOpenOnboardingEmailModal();
+  resetScoreCardUi();
 
   function getOrCreateClientId() {
     const existing = localStorage.getItem(CLIENT_ID_KEY);
@@ -81,6 +84,44 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!sysStatus) return;
     sysStatus.textContent = message || "";
     sysStatus.style.color = kind === "error" ? "#dc2626" : "#10B981";
+  }
+
+  function showToast(message, kind = "info") {
+    if (!toastContainer) return;
+
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${kind}`;
+    toast.textContent = message;
+    toastContainer.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add("show"));
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+      setTimeout(() => toast.remove(), 220);
+    }, 2800);
+  }
+
+  function resetScoreCardUi() {
+    const scoreEl = document.getElementById("dynamic-score");
+    if (scoreEl) scoreEl.innerHTML = `--<span class="pct">%</span>`;
+
+    const donut = document.getElementById("dynamic-donut");
+    if (donut) {
+      donut.style.strokeDashoffset = "314";
+      donut.style.stroke = "#7C3AED";
+    }
+
+    const labelEl = document.getElementById("dynamic-label");
+    if (labelEl) {
+      labelEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="#7c3aed"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Awaiting Analysis';
+    }
+
+    const feedbackEl = document.getElementById("match-feedback");
+    if (feedbackEl) feedbackEl.textContent = "";
+
+    const scoreCard = document.querySelector(".match-score");
+    if (scoreCard) scoreCard.classList.remove("score-high", "score-medium", "score-low");
   }
 
   function setBusy(busy) {
@@ -170,6 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       setStatus("Parsing PDF...");
+      isParsingResume = true;
+      showToast("Resume parsing has started. Please wait before generating.", "info");
       try {
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
@@ -187,8 +230,12 @@ document.addEventListener("DOMContentLoaded", () => {
         uploadLbl.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> PDF Uploaded';
         uploadLbl.style.background = "var(--purple-50)";
         setStatus("PDF successfully extracted.");
+        showToast("Resume parsing complete.", "info");
       } catch (error) {
         setStatus("Failed to extract PDF text.", "error");
+        showToast("Resume parsing failed. Try another PDF.", "error");
+      } finally {
+        isParsingResume = false;
       }
     });
 
@@ -266,6 +313,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function bindGeneration() {
     generateBtn.addEventListener("click", async () => {
       const identity = requestIdentity();
+      if (isParsingResume) {
+        showToast("Resume is still being parsed. Please wait a moment.", "info");
+        setStatus("Resume parsing in progress. Please wait.", "error");
+        return;
+      }
       if (!jdText) {
         setStatus("Please paste the job description.", "error");
         return;
