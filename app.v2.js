@@ -6,13 +6,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const TRIAL_LOCAL_KEY = "resume_tailor_trial_email";
   const MODEL_LOCAL_KEY = "gemini_model";
   const CLIENT_ID_KEY = "resume_tailor_client_id";
+  const ONBOARDING_DISMISSED_KEY = "resume_tailor_onboarding_dismissed";
 
   const apiModal = document.getElementById("api-modal");
   const jdModal = document.getElementById("jd-modal");
   const resumeTextModal = document.getElementById("resume-text-modal");
   const placeholderModal = document.getElementById("placeholder-modal");
   const editModal = document.getElementById("edit-modal");
-  const allModals = [apiModal, jdModal, resumeTextModal, placeholderModal, editModal].filter(Boolean);
+  const onboardingEmailModal = document.getElementById("onboarding-email-modal");
+  const allModals = [apiModal, jdModal, resumeTextModal, placeholderModal, editModal, onboardingEmailModal].filter(Boolean);
 
   const modelSelect = document.getElementById("model-select");
   const jdInput = document.getElementById("jd-input");
@@ -44,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
   bindThemeToggle();
   bindNavLinks();
   bindEscapeClose();
+  bindOnboardingEmailModal();
 
   if (emailInput) {
     emailInput.addEventListener("blur", refreshTrialStatus);
@@ -53,6 +56,8 @@ document.addEventListener("DOMContentLoaded", () => {
   refreshTrialStatus().catch(() => {
     if (trialStatus) trialStatus.textContent = "Free trial status unavailable";
   });
+
+  maybeOpenOnboardingEmailModal();
 
   function getOrCreateClientId() {
     const existing = localStorage.getItem(CLIENT_ID_KEY);
@@ -86,6 +91,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function normalizeOptionalEmail(rawEmail) {
+    const email = (rawEmail || "").trim().toLowerCase();
+    if (!email) return "";
+    return isValidEmail(email) ? email : "";
   }
 
   function openModal(modal) {
@@ -229,7 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function requestIdentity() {
-    const email = emailInput?.value.trim().toLowerCase() || "";
+    const email = normalizeOptionalEmail(emailInput?.value || "");
     if (email) localStorage.setItem(TRIAL_LOCAL_KEY, email);
 
     return {
@@ -242,8 +253,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!trialStatus) return;
 
     const identity = requestIdentity();
-    if (identity.email && !isValidEmail(identity.email)) {
-      trialStatus.textContent = "Enter a valid email to track your free trials.";
+    const rawEmail = emailInput?.value.trim();
+    if (rawEmail && !identity.email) {
+      trialStatus.textContent = "Invalid email format. Using anonymous trial tracking.";
       return;
     }
 
@@ -254,11 +266,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function bindGeneration() {
     generateBtn.addEventListener("click", async () => {
       const identity = requestIdentity();
-
-      if (!identity.email || !isValidEmail(identity.email)) {
-        setStatus("Enter a valid email to use free trials.", "error");
-        return;
-      }
       if (!jdText) {
         setStatus("Please paste the job description.", "error");
         return;
@@ -559,6 +566,49 @@ document.addEventListener("DOMContentLoaded", () => {
       placeholderText.innerHTML = "<strong>How are limits enforced?</strong><br>Rate-limiting and trial tracking run on the backend API so browser-side tampering does not grant extra usage.";
       openModal(placeholderModal);
     });
+
+    const signInBtn = document.getElementById("sign-in-btn");
+    if (signInBtn) {
+      signInBtn.addEventListener("click", () => openModal(onboardingEmailModal));
+    }
+  }
+
+  function bindOnboardingEmailModal() {
+    const continueBtn = document.getElementById("onboarding-email-continue-btn");
+    const skipBtn = document.getElementById("onboarding-email-skip-btn");
+    const onboardingInput = document.getElementById("onboarding-email-input");
+    if (!continueBtn || !skipBtn || !onboardingInput) return;
+
+    continueBtn.addEventListener("click", async () => {
+      const email = normalizeOptionalEmail(onboardingInput.value);
+      if (!email) {
+        setStatus("Please enter a valid email or skip for now.", "error");
+        return;
+      }
+
+      if (emailInput) emailInput.value = email;
+      localStorage.setItem(TRIAL_LOCAL_KEY, email);
+      localStorage.setItem(ONBOARDING_DISMISSED_KEY, "1");
+      closeModal(onboardingEmailModal);
+      await refreshTrialStatus();
+      setStatus("Email saved. You can now continue.");
+    });
+
+    skipBtn.addEventListener("click", async () => {
+      localStorage.setItem(ONBOARDING_DISMISSED_KEY, "1");
+      closeModal(onboardingEmailModal);
+      await refreshTrialStatus();
+      setStatus("Continuing without email for testing.");
+    });
+  }
+
+  function maybeOpenOnboardingEmailModal() {
+    if (!onboardingEmailModal) return;
+    const hasDismissed = localStorage.getItem(ONBOARDING_DISMISSED_KEY) === "1";
+    const storedEmail = normalizeOptionalEmail(localStorage.getItem(TRIAL_LOCAL_KEY) || "");
+    if (!hasDismissed && !storedEmail) {
+      setTimeout(() => openModal(onboardingEmailModal), 250);
+    }
   }
 
   closeAllModals();
