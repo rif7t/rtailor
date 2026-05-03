@@ -73,7 +73,14 @@ async function geminiRequest({ model, prompt, temperature = 0.2 }) {
 
 function normalizeResumePayload(parsed) {
   const fallback = {
-    metrics: { score: null, improvements: ["Improved role alignment", "Strengthened impact wording"] },
+    metrics: {
+      score: null,
+      baselineScore: null,
+      optimizedScore: null,
+      fitSummary: "",
+      requiredAdditions: [],
+      improvements: ["Improved role alignment", "Strengthened impact wording"]
+    },
     name: "Candidate",
     contact: {},
     summary: "",
@@ -98,6 +105,8 @@ function normalizeResumePayload(parsed) {
   };
 
   if (!Array.isArray(merged.metrics.improvements)) merged.metrics.improvements = fallback.metrics.improvements;
+  if (!Array.isArray(merged.metrics.requiredAdditions)) merged.metrics.requiredAdditions = [];
+  if (typeof merged.metrics.fitSummary !== "string") merged.metrics.fitSummary = "";
   if (!Array.isArray(merged.skills)) merged.skills = [];
   if (!Array.isArray(merged.experience)) merged.experience = [];
   if (!Array.isArray(merged.projects)) merged.projects = [];
@@ -106,7 +115,11 @@ function normalizeResumePayload(parsed) {
   if (!merged.contact || typeof merged.contact !== "object") merged.contact = {};
 
   const numericScore = Number(merged.metrics.score);
+  const baselineScore = Number(merged.metrics.baselineScore);
+  const optimizedScore = Number(merged.metrics.optimizedScore);
   merged.metrics.score = Number.isFinite(numericScore) ? Math.max(1, Math.min(100, Math.round(numericScore))) : null;
+  merged.metrics.baselineScore = Number.isFinite(baselineScore) ? Math.max(1, Math.min(100, Math.round(baselineScore))) : null;
+  merged.metrics.optimizedScore = Number.isFinite(optimizedScore) ? Math.max(1, Math.min(100, Math.round(optimizedScore))) : null;
 
   return merged;
 }

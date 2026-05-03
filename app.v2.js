@@ -526,6 +526,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let scoreTone = "high";
     let donutColor = "#7C3AED";
     let matchFeedback = "";
+    const fitSummary = typeof metrics.fitSummary === "string" ? metrics.fitSummary.trim() : "";
+    const requiredAdditions = Array.isArray(metrics.requiredAdditions)
+      ? metrics.requiredAdditions.filter(Boolean).slice(0, 3)
+      : [];
 
     if (boundedScore >= 90) {
       label = "Excellent Match";
@@ -537,12 +541,15 @@ document.addEventListener("DOMContentLoaded", () => {
       label = "Fair Match";
       scoreTone = "medium";
       donutColor = "#2563EB";
-      matchFeedback = "The tailored resume is improved, but your current profile is only moderately aligned with this JD.";
+      matchFeedback = fitSummary || "The tailored resume is improved, but this resume remains a moderate fit for the JD.";
     } else {
       label = "Low Match";
       scoreTone = "low";
       donutColor = "#D97706";
-      matchFeedback = "Even after optimization, this JD remains a weak fit. Consider adding stronger relevant projects or experience.";
+      const specificAdds = requiredAdditions.length
+        ? ` Add to strengthen fit: ${requiredAdditions.join("; ")}.`
+        : " Add more directly relevant projects, tools, and quantified outcomes from comparable work.";
+      matchFeedback = `${fitSummary || "Even after optimization, this resume remains a weak fit for this JD."}${specificAdds}`;
     }
 
     if (donut) donut.style.stroke = donutColor;
