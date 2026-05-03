@@ -388,24 +388,26 @@ document.addEventListener("DOMContentLoaded", () => {
       .filter((term) => term.length > 3 && !stopWords.has(term));
   }
 
-  function estimateMatchScoreFromContent(data, targetJd) {
+  function estimateMatchScoreFromText(sourceText, targetJd) {
     const jdTerms = [...new Set(extractScoringTerms(targetJd))];
     if (!jdTerms.length) return 50;
 
+    const sourceTerms = new Set(extractScoringTerms(sourceText));
+    const overlapCount = jdTerms.filter((term) => sourceTerms.has(term)).length;
+    const overlapRatio = overlapCount / jdTerms.length;
+
+    const estimated = Math.round(20 + overlapRatio * 72);
+    return Math.max(1, Math.min(100, estimated));
+  }
+
+  function estimateMatchScoreFromContent(data, targetJd) {
     const candidateText = [
       data?.summary || "",
       ...(Array.isArray(data?.skills) ? data.skills : []),
       ...(Array.isArray(data?.experience) ? data.experience.flatMap((job) => [job?.title || "", job?.company || "", ...(Array.isArray(job?.bullets) ? job.bullets : [])]) : []),
       ...(Array.isArray(data?.projects) ? data.projects.flatMap((project) => [project?.name || "", project?.description || "", ...(Array.isArray(project?.bullets) ? project.bullets : [])]) : [])
     ].join(" ");
-
-    const candidateTerms = new Set(extractScoringTerms(candidateText));
-    const overlapCount = jdTerms.filter((term) => candidateTerms.has(term)).length;
-    const overlapRatio = overlapCount / jdTerms.length;
-
-    // Keep estimate realistic and avoid extreme spikes from short JDs.
-    const estimated = Math.round(25 + overlapRatio * 70);
-    return Math.max(1, Math.min(100, estimated));
+    return estimateMatchScoreFromText(candidateText, targetJd);
   }
 
   async function rewriteSingleBullet(bulletText, jobTitle) {
@@ -501,10 +503,16 @@ document.addEventListener("DOMContentLoaded", () => {
     if (beforeContent && uploadedText) beforeContent.textContent = uploadedText;
 
     const metrics = data.metrics && typeof data.metrics === "object" ? data.metrics : {};
-    const score = Number(metrics.score);
-    const boundedScore = Number.isFinite(score)
-      ? Math.max(1, Math.min(100, score))
-      : estimateMatchScoreFromContent(data, jdText);
+    const modelScore = Number(metrics.score);
+    const baselineScore = estimateMatchScoreFromText(uploadedText, jdText);
+    const tailoredScore = estimateMatchScoreFromContent(data, jdText);
+
+    // Display score is primarily data-driven from JD overlap, with model score only as a light signal.
+    const blendedScore = Number.isFinite(modelScore)
+      ? (baselineScore * 0.55) + (tailoredScore * 0.30) + (Math.max(1, Math.min(100, modelScore)) * 0.15)
+      : (baselineScore * 0.65) + (tailoredScore * 0.35);
+
+    const boundedScore = Math.max(1, Math.min(100, blendedScore));
     const roundedScore = Math.round(boundedScore);
 
     const scoreEl = document.getElementById("dynamic-score");
