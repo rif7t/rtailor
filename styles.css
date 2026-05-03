@@ -119,6 +119,13 @@ h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; }
 .donut-value { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; color: #0F172A; }
 .donut-value .pct { font-size: 1rem; }
 .match-label { text-align: center; color: #7C3AED; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.match-feedback { min-height: 2.6rem; margin-top: 0.5rem; text-align: center; font-size: 0.78rem; line-height: 1.4; color: #64748B; }
+
+.match-score.score-high .match-label { color: #7C3AED; }
+.match-score.score-medium .match-label { color: #2563EB; }
+.match-score.score-low .match-label { color: #D97706; }
+.match-score.score-low #dynamic-score { color: #D97706; }
+.match-score.score-low #match-feedback { color: #B45309; font-weight: 600; }
 
 .key-improvements ul { list-style: none; }
 .key-improvements li { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; margin-bottom: 0.75rem; color: #334155; font-weight: 500; }
@@ -231,6 +238,8 @@ body.dark-mode .theme-toggle { background: #1E293B; border-color: #334155; }
 body.dark-mode .toggle-track { background: #334155; }
 body.dark-mode .toggle-knob { transform: translateX(14px); background: #94A3B8; }
 body.dark-mode .donut-chart .donut-value { color: #F8FAFC; }
+body.dark-mode .match-score.score-low #dynamic-score { color: #FBBF24; }
+body.dark-mode .match-score.score-low #match-feedback { color: #FCD34D; }
 
 body.dark-mode .modal-input, body.dark-mode .modal textarea { background: #0B0F19; color: #F8FAFC; border-color: #334155; }
 body.dark-mode .secondary-btn-sm { background: #1E293B; color: #E2E8F0; border-color: #334155; }

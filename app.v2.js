@@ -422,21 +422,58 @@ document.addEventListener("DOMContentLoaded", () => {
     if (data.metrics) {
       const score = Number(data.metrics.score || 85);
       const boundedScore = Number.isFinite(score) ? Math.max(1, Math.min(100, score)) : 85;
+      const roundedScore = Math.round(boundedScore);
 
       const scoreEl = document.getElementById("dynamic-score");
-      if (scoreEl) scoreEl.innerHTML = `${Math.round(boundedScore)}<span class="pct">%</span>`;
+      if (scoreEl) scoreEl.innerHTML = `${roundedScore}<span class="pct">%</span>`;
 
       const offset = 314 - (314 * boundedScore) / 100;
       const donut = document.getElementById("dynamic-donut");
       if (donut) donut.style.strokeDashoffset = offset;
 
       let label = "Strong Match";
-      if (boundedScore >= 90) label = "Excellent Match";
-      else if (boundedScore < 70) label = "Fair Match";
+      let scoreTone = "high";
+      let donutColor = "#7C3AED";
+      let matchFeedback = "";
+
+      if (boundedScore >= 90) {
+        label = "Excellent Match";
+      } else if (boundedScore >= 70) {
+        label = "Strong Match";
+        scoreTone = "medium";
+        donutColor = "#2563EB";
+      } else if (boundedScore >= 50) {
+        label = "Fair Match";
+        scoreTone = "medium";
+        donutColor = "#2563EB";
+        matchFeedback = "The tailored resume is improved, but your current profile is only moderately aligned with this JD.";
+      } else {
+        label = "Low Match";
+        scoreTone = "low";
+        donutColor = "#D97706";
+        matchFeedback = "Even after optimization, this JD remains a weak fit. Consider adding stronger relevant projects or experience.";
+      }
+
+      if (donut) donut.style.stroke = donutColor;
+
+      const scoreCard = document.querySelector(".match-score");
+      if (scoreCard) {
+        scoreCard.classList.remove("score-high", "score-medium", "score-low");
+        scoreCard.classList.add(`score-${scoreTone}`);
+      }
 
       const labelEl = document.getElementById("dynamic-label");
       if (labelEl) {
-        labelEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="#7c3aed"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${label}`;
+        labelEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="${donutColor}"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> ${label}`;
+      }
+
+      const feedbackEl = document.getElementById("match-feedback");
+      if (feedbackEl) {
+        feedbackEl.textContent = matchFeedback;
+      }
+
+      if (boundedScore < 50) {
+        setStatus("Low JD match: resume optimized, but profile fit is still weak for this role.", "error");
       }
 
       const impUl = document.getElementById("dynamic-improvements");
