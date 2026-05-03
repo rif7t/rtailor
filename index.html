@@ -119,13 +119,13 @@
                 <div class="match-score">
                     <h4>JD Match Score</h4>
                     <div class="donut-chart">
-                        <div class="donut-value" id="dynamic-score">92<span class="pct">%</span></div>
+                        <div class="donut-value" id="dynamic-score">--<span class="pct">%</span></div>
                         <svg width="120" height="120" viewBox="0 0 120 120">
                             <circle cx="60" cy="60" r="50" fill="none" stroke="#e2e8f0" stroke-width="12"/>
-                            <circle id="dynamic-donut" cx="60" cy="60" r="50" fill="none" stroke="#7c3aed" stroke-width="12" stroke-dasharray="314" stroke-dashoffset="25" stroke-linecap="round" style="transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 1s ease-in-out;"/>
+                            <circle id="dynamic-donut" cx="60" cy="60" r="50" fill="none" stroke="#7c3aed" stroke-width="12" stroke-dasharray="314" stroke-dashoffset="314" stroke-linecap="round" style="transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 1s ease-in-out;"/>
                         </svg>
                     </div>
-                    <div class="match-label" id="dynamic-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#7c3aed"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Excellent Match</div>
+                    <div class="match-label" id="dynamic-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="#7c3aed"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Awaiting Analysis</div>
                     <p class="match-feedback" id="match-feedback"></p>
                 </div>
                 <!-- ... -->
@@ -232,9 +232,9 @@
                 <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash</option>
                 <option value="gemini-1.5-flash-8b-latest">Gemini 1.5 Flash-8B</option>
                 <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro</option>
-                <option value="gemini-2.0-flash" selected>Gemini 2.0 Flash</option>
+                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
                 <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-                <option value="gemma-3-27b-it">Gemma 3 27B</option>
+                <option value="gemma-3-27b-it" selected>Gemma 3 27B</option>
             </select>
             <div class="modal-actions" style="margin-top: 16px;">
                 <button class="primary-btn-sm" id="save-api-btn">Save</button>

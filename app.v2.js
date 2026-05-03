@@ -327,6 +327,35 @@ document.addEventListener("DOMContentLoaded", () => {
     return result;
   }
 
+  function extractScoringTerms(source) {
+    const stopWords = new Set(["and", "the", "to", "a", "of", "in", "for", "with", "on", "is", "as", "it", "by", "that", "this", "be", "are", "or", "an"]);
+    return String(source || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter((term) => term.length > 3 && !stopWords.has(term));
+  }
+
+  function estimateMatchScoreFromContent(data, targetJd) {
+    const jdTerms = [...new Set(extractScoringTerms(targetJd))];
+    if (!jdTerms.length) return 50;
+
+    const candidateText = [
+      data?.summary || "",
+      ...(Array.isArray(data?.skills) ? data.skills : []),
+      ...(Array.isArray(data?.experience) ? data.experience.flatMap((job) => [job?.title || "", job?.company || "", ...(Array.isArray(job?.bullets) ? job.bullets : [])]) : []),
+      ...(Array.isArray(data?.projects) ? data.projects.flatMap((project) => [project?.name || "", project?.description || "", ...(Array.isArray(project?.bullets) ? project.bullets : [])]) : [])
+    ].join(" ");
+
+    const candidateTerms = new Set(extractScoringTerms(candidateText));
+    const overlapCount = jdTerms.filter((term) => candidateTerms.has(term)).length;
+    const overlapRatio = overlapCount / jdTerms.length;
+
+    // Keep estimate realistic and avoid extreme spikes from short JDs.
+    const estimated = Math.round(25 + overlapRatio * 70);
+    return Math.max(1, Math.min(100, estimated));
+  }
+
   async function rewriteSingleBullet(bulletText, jobTitle) {
     const identity = requestIdentity();
     const payload = await postJson("/api/rewrite-bullet", {
@@ -420,8 +449,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (beforeContent && uploadedText) beforeContent.textContent = uploadedText;
 
     if (data.metrics) {
-      const score = Number(data.metrics.score || 85);
-      const boundedScore = Number.isFinite(score) ? Math.max(1, Math.min(100, score)) : 85;
+      const score = Number(data.metrics.score);
+      const boundedScore = Number.isFinite(score)
+        ? Math.max(1, Math.min(100, score))
+        : estimateMatchScoreFromContent(data, jdText);
       const roundedScore = Math.round(boundedScore);
 
       const scoreEl = document.getElementById("dynamic-score");

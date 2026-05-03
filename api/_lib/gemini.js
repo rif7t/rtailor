@@ -19,7 +19,7 @@ function pickModel(requestedModel) {
   if (requestedModel && ALLOWED_MODELS.has(requestedModel)) {
     return requestedModel;
   }
-  return "gemini-2.0-flash";
+  return "gemma-3-27b-it";
 }
 
 function stripCodeFence(text) {
@@ -73,7 +73,7 @@ async function geminiRequest({ model, prompt, temperature = 0.2 }) {
 
 function normalizeResumePayload(parsed) {
   const fallback = {
-    metrics: { score: 75, improvements: ["Improved role alignment", "Strengthened impact wording"] },
+    metrics: { score: null, improvements: ["Improved role alignment", "Strengthened impact wording"] },
     name: "Candidate",
     contact: {},
     summary: "",
@@ -106,7 +106,7 @@ function normalizeResumePayload(parsed) {
   if (!merged.contact || typeof merged.contact !== "object") merged.contact = {};
 
   const numericScore = Number(merged.metrics.score);
-  merged.metrics.score = Number.isFinite(numericScore) ? Math.max(1, Math.min(100, Math.round(numericScore))) : 75;
+  merged.metrics.score = Number.isFinite(numericScore) ? Math.max(1, Math.min(100, Math.round(numericScore))) : null;
 
   return merged;
 }
