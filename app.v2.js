@@ -708,11 +708,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const atsContainer = document.getElementById("ats-resume");
 
     document.getElementById("download-trigger").addEventListener("click", () => {
-      document.title = generatedData?.name ? `${generatedData.name.replace(/\s+/g, "_")}_Tailored` : "Tailored_Resume";
+      if (!atsContainer.innerHTML.trim()) {
+        setStatus("Generate a tailored resume before downloading.", "error");
+        return;
+      }
+
+      showToast("In the Print dialog, turn off 'Headers and footers' to hide date, time, and URL.", "info");
       window.print();
-      setTimeout(() => {
-        document.title = "ResumeTailor AI";
-      }, 1000);
     });
 
     document.getElementById("edit-trigger").addEventListener("click", () => {
