@@ -379,25 +379,88 @@ document.addEventListener("DOMContentLoaded", () => {
     return result;
   }
 
-  function extractScoringTerms(source) {
-    const stopWords = new Set(["and", "the", "to", "a", "of", "in", "for", "with", "on", "is", "as", "it", "by", "that", "this", "be", "are", "or", "an"]);
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function normalizeTechAliases(source) {
     return String(source || "")
       .toLowerCase()
+      .replace(/c\+\+/g, " cpp ")
+      .replace(/c#/g, " csharp ")
+      .replace(/\.net/g, " dotnet ")
+      .replace(/node\.js/g, " nodejs ")
+      .replace(/react\.js/g, " react ")
+      .replace(/next\.js/g, " nextjs ")
+      .replace(/ci\/cd/g, " cicd ")
       .replace(/[^a-z0-9\s]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function stemTerm(term) {
+    if (term.length <= 4) return term;
+    if (term.endsWith("ing") && term.length > 6) return term.slice(0, -3);
+    if (term.endsWith("ed") && term.length > 5) return term.slice(0, -2);
+    if (term.endsWith("es") && term.length > 5) return term.slice(0, -2);
+    if (term.endsWith("s") && term.length > 4) return term.slice(0, -1);
+    return term;
+  }
+
+  function extractScoringTerms(source) {
+    const stopWords = new Set([
+      "and", "the", "to", "a", "of", "in", "for", "with", "on", "is", "as", "it", "by", "that", "this", "be", "are", "or", "an",
+      "work", "working", "role", "team", "teams", "experience", "years", "year", "candidate", "skills", "skill", "strong", "good", "preferred"
+    ]);
+    const shortAllowList = new Set(["ai", "ml", "ui", "ux", "go", "qa", "bi", "aws", "gcp", "api", "sql"]);
+
+    return normalizeTechAliases(source)
       .split(/\s+/)
-      .filter((term) => term.length > 3 && !stopWords.has(term));
+      .map(stemTerm)
+      .filter((term) => {
+        if (!term) return false;
+        if (term.length < 3 && !shortAllowList.has(term)) return false;
+        return !stopWords.has(term);
+      });
+  }
+
+  function buildWeightedJdTerms(targetJd) {
+    const requirementWords = ["must", "required", "requirement", "need", "needed", "responsibilities", "qualification", "qualifications"];
+    const weights = new Map();
+    const sentences = String(targetJd || "").split(/[\n.!?]+/).map((s) => s.trim()).filter(Boolean);
+
+    sentences.forEach((sentence) => {
+      const lowerSentence = sentence.toLowerCase();
+      const boost = requirementWords.some((word) => lowerSentence.includes(word)) ? 0.75 : 0;
+      extractScoringTerms(sentence).forEach((term) => {
+        const current = weights.get(term) || 0;
+        weights.set(term, current + 1 + boost);
+      });
+    });
+
+    return weights;
   }
 
   function estimateMatchScoreFromText(sourceText, targetJd) {
-    const jdTerms = [...new Set(extractScoringTerms(targetJd))];
-    if (!jdTerms.length) return 50;
+    const jdWeights = buildWeightedJdTerms(targetJd);
+    if (!jdWeights.size) return { score: 50, coverage: 0.28 };
 
     const sourceTerms = new Set(extractScoringTerms(sourceText));
-    const overlapCount = jdTerms.filter((term) => sourceTerms.has(term)).length;
-    const overlapRatio = overlapCount / jdTerms.length;
+    let totalWeight = 0;
+    let matchedWeight = 0;
 
-    const estimated = Math.round(20 + overlapRatio * 72);
-    return Math.max(1, Math.min(100, estimated));
+    jdWeights.forEach((weight, term) => {
+      totalWeight += weight;
+      if (sourceTerms.has(term)) matchedWeight += weight;
+    });
+
+    const coverage = totalWeight > 0 ? matchedWeight / totalWeight : 0;
+    const estimated = Math.round(30 + 70 * Math.pow(coverage, 0.65));
+
+    return {
+      score: clamp(estimated, 1, 100),
+      coverage
+    };
   }
 
   function estimateMatchScoreFromContent(data, targetJd) {
@@ -504,15 +567,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const metrics = data.metrics && typeof data.metrics === "object" ? data.metrics : {};
     const modelScore = Number(metrics.score);
-    const baselineScore = estimateMatchScoreFromText(uploadedText, jdText);
-    const tailoredScore = estimateMatchScoreFromContent(data, jdText);
+    const baseline = estimateMatchScoreFromText(uploadedText, jdText);
+    const tailored = estimateMatchScoreFromContent(data, jdText);
 
-    // Display score is primarily data-driven from JD overlap, with model score only as a light signal.
-    const blendedScore = Number.isFinite(modelScore)
-      ? (baselineScore * 0.55) + (tailoredScore * 0.30) + (Math.max(1, Math.min(100, modelScore)) * 0.15)
-      : (baselineScore * 0.65) + (tailoredScore * 0.35);
+    // Second-pass calibration: final score should reflect tailored JD fit, not penalize too hard for original baseline.
+    const modelSignal = Number.isFinite(modelScore) ? clamp(Math.round(modelScore), 1, 100) : null;
+    let blendedScore = modelSignal !== null
+      ? (tailored.score * 0.75) + (modelSignal * 0.25)
+      : tailored.score;
 
-    const boundedScore = Math.max(1, Math.min(100, blendedScore));
+    // Guardrails against pessimistic under-scoring when weighted JD coverage is strong.
+    if (tailored.coverage >= 0.45) blendedScore = Math.max(blendedScore, 68);
+    if (tailored.coverage >= 0.60) blendedScore = Math.max(blendedScore, 76);
+    if (tailored.coverage >= 0.75) blendedScore = Math.max(blendedScore, 85);
+
+    // Ensure optimized score never drops below baseline by more than a small tolerance.
+    blendedScore = Math.max(blendedScore, baseline.score - 3);
+
+    const boundedScore = clamp(blendedScore, 1, 100);
     const roundedScore = Math.round(boundedScore);
 
     const scoreEl = document.getElementById("dynamic-score");
